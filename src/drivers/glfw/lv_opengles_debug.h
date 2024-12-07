@@ -14,8 +14,10 @@ extern "C" {
 #if LV_USE_OPENGLES
 
 #include <stdbool.h>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
+//#include <GL/glew.h>
+//#include <GLFW/glfw3.h>
 
 void GLClearError(void);
 

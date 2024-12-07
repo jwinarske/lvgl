@@ -14,43 +14,57 @@ extern "C" {
  *      INCLUDES
  *********************/
 
+#include <stdbool.h>
+
 #include "lv_glfw_window.h"
 #if LV_USE_OPENGLES
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
+// #include <GL/glew.h>
+// #include <GLFW/glfw3.h>
 
-#include "../../misc/lv_area.h"
 #include "../../display/lv_display.h"
 #include "../../indev/lv_indev.h"
+#include "../../misc/lv_area.h"
 
 /*********************
  *      DEFINES
  *********************/
+#define GLFW_TRUE true
+#define GLFW_FALSE false
+
+#define GLEW_OK 0
+#define GLFW_MOUSE_BUTTON_LEFT 1
+#define GLFW_PRESS 0
+#define GLFW_KEY_ESCAPE 5
 
 /**********************
  *      TYPEDEFS
  **********************/
+typedef struct GLFWwindow_ {
+  EGLSurface* window;
+} GLFWwindow;
 
 struct lv_glfw_window_t {
-    GLFWwindow * window;
-    int32_t hor_res;
-    int32_t ver_res;
-    lv_ll_t textures;
-    lv_point_t mouse_last_point;
-    lv_indev_state_t mouse_last_state;
-    uint8_t use_indev : 1;
-    uint8_t closing : 1;
+  GLFWwindow* window;
+  int32_t hor_res;
+  int32_t ver_res;
+  lv_ll_t textures;
+  lv_point_t mouse_last_point;
+  lv_indev_state_t mouse_last_state;
+  uint8_t use_indev : 1;
+  uint8_t closing : 1;
 };
 
 struct lv_glfw_texture_t {
-    lv_glfw_window_t * window;
-    unsigned int texture_id;
-    lv_area_t area;
-    lv_opa_t opa;
-    lv_indev_t * indev;
-    lv_point_t indev_last_point;
-    lv_indev_state_t indev_last_state;
+  lv_glfw_window_t* window;
+  unsigned int texture_id;
+  lv_area_t area;
+  lv_opa_t opa;
+  lv_indev_t* indev;
+  lv_point_t indev_last_point;
+  lv_indev_state_t indev_last_state;
 };
 
 /**********************
