@@ -36,39 +36,59 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void window_update_handler(lv_timer_t* t);
+#if 0 //TODO
+
+static void window_update_handler(lv_timer_t *t);
+
 static uint32_t lv_glfw_tick_count_callback(void);
-static lv_glfw_window_t* lv_glfw_get_lv_window_from_window(GLFWwindow* window);
-static void glfw_error_cb(int error, const char* description);
+
+static lv_glfw_window_t *lv_glfw_get_lv_window_from_window(GLFWwindow *window);
+
+static void glfw_error_cb(int error, const char *description);
+
 static int lv_glfw_init(void);
+
 static int lv_glew_init(void);
+
 static void lv_glfw_timer_init(void);
-static void lv_glfw_window_config(GLFWwindow* window, bool use_mouse_indev);
+
+static void lv_glfw_window_config(GLFWwindow *window, bool use_mouse_indev);
+
 static void lv_glfw_window_quit(void);
-static void window_close_callback(GLFWwindow* window);
-static void key_callback(GLFWwindow* window,
+
+static void window_close_callback(GLFWwindow *window);
+
+static void key_callback(GLFWwindow *window,
                          int key,
                          int scancode,
                          int action,
                          int mods);
-static void mouse_button_callback(GLFWwindow* window,
+
+static void mouse_button_callback(GLFWwindow *window,
                                   int button,
                                   int action,
                                   int mods);
-static void mouse_move_callback(GLFWwindow* window, double xpos, double ypos);
-static void proc_mouse(lv_glfw_window_t* window);
-static void indev_read_cb(lv_indev_t* indev, lv_indev_data_t* data);
-static void framebuffer_size_callback(GLFWwindow* window,
+
+static void mouse_move_callback(GLFWwindow *window, double xpos, double ypos);
+
+static void proc_mouse(lv_glfw_window_t *window);
+
+static void indev_read_cb(lv_indev_t *indev, lv_indev_data_t *data);
+
+static void framebuffer_size_callback(GLFWwindow *window,
                                       int width,
                                       int height);
+#endif
 
 /**********************
  *  STATIC VARIABLES
  **********************/
+#if 0 //TODO
 static bool glfw_inited;
 static bool glew_inited;
-static lv_timer_t* update_handler_timer;
+static lv_timer_t *update_handler_timer;
 static lv_ll_t glfw_window_ll;
+#endif
 
 /**********************
  *      MACROS
@@ -77,22 +97,22 @@ static lv_ll_t glfw_window_ll;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-
-lv_glfw_window_t* lv_glfw_window_create(int32_t hor_res,
+#if 0 //TODO
+lv_glfw_window_t *lv_glfw_window_create(int32_t hor_res,
                                         int32_t ver_res,
                                         bool use_mouse_indev) {
   if (lv_glfw_init() != 0) {
     return NULL;
   }
 
-  lv_glfw_window_t* window = lv_ll_ins_tail(&glfw_window_ll);
+  lv_glfw_window_t *window = lv_ll_ins_tail(&glfw_window_ll);
   LV_ASSERT_MALLOC(window);
   if (window == NULL)
     return NULL;
   lv_memzero(window, sizeof(*window));
 
   /* Create window with graphics context */
-  lv_glfw_window_t* existing_window = lv_ll_get_head(&glfw_window_ll);
+  lv_glfw_window_t *existing_window = lv_ll_get_head(&glfw_window_ll);
   window->window =
       glfwCreateWindow(hor_res, ver_res, "LVGL Simulator", NULL,
                        existing_window ? existing_window->window : NULL);
@@ -118,10 +138,10 @@ lv_glfw_window_t* lv_glfw_window_create(int32_t hor_res,
   return window;
 }
 
-void lv_glfw_window_delete(lv_glfw_window_t* window) {
+void lv_glfw_window_delete(lv_glfw_window_t *window) {
   glfwDestroyWindow(window->window);
   if (window->use_indev) {
-    lv_glfw_texture_t* texture;
+    lv_glfw_texture_t *texture;
     LV_LL_READ(&window->textures, texture) {
       lv_indev_delete(texture->indev);
     }
@@ -135,11 +155,11 @@ void lv_glfw_window_delete(lv_glfw_window_t* window) {
   }
 }
 
-lv_glfw_texture_t* lv_glfw_window_add_texture(lv_glfw_window_t* window,
+lv_glfw_texture_t *lv_glfw_window_add_texture(lv_glfw_window_t *window,
                                               unsigned int texture_id,
                                               int32_t w,
                                               int32_t h) {
-  lv_glfw_texture_t* texture = lv_ll_ins_tail(&window->textures);
+  lv_glfw_texture_t *texture = lv_ll_ins_tail(&window->textures);
   LV_ASSERT_MALLOC(texture);
   if (texture == NULL)
     return NULL;
@@ -150,10 +170,10 @@ lv_glfw_texture_t* lv_glfw_window_add_texture(lv_glfw_window_t* window,
   texture->opa = LV_OPA_COVER;
 
   if (window->use_indev) {
-    lv_display_t* texture_disp =
+    lv_display_t *texture_disp =
         lv_opengles_texture_get_from_texture_id(texture_id);
     if (texture_disp != NULL) {
-      lv_indev_t* indev = lv_indev_create();
+      lv_indev_t *indev = lv_indev_create();
       if (indev == NULL) {
         lv_ll_remove(&window->textures, texture);
         lv_free(texture);
@@ -171,7 +191,7 @@ lv_glfw_texture_t* lv_glfw_window_add_texture(lv_glfw_window_t* window,
   return texture;
 }
 
-void lv_glfw_texture_remove(lv_glfw_texture_t* texture) {
+void lv_glfw_texture_remove(lv_glfw_texture_t *texture) {
   if (texture->indev != NULL) {
     lv_indev_delete(texture->indev);
   }
@@ -179,25 +199,27 @@ void lv_glfw_texture_remove(lv_glfw_texture_t* texture) {
   lv_free(texture);
 }
 
-void lv_glfw_texture_set_x(lv_glfw_texture_t* texture, int32_t x) {
+void lv_glfw_texture_set_x(lv_glfw_texture_t *texture, int32_t x) {
   lv_area_set_pos(&texture->area, x, texture->area.y1);
 }
 
-void lv_glfw_texture_set_y(lv_glfw_texture_t* texture, int32_t y) {
+void lv_glfw_texture_set_y(lv_glfw_texture_t *texture, int32_t y) {
   lv_area_set_pos(&texture->area, texture->area.x1, y);
 }
 
-void lv_glfw_texture_set_opa(lv_glfw_texture_t* texture, lv_opa_t opa) {
+void lv_glfw_texture_set_opa(lv_glfw_texture_t *texture, lv_opa_t opa) {
   texture->opa = opa;
 }
 
-lv_indev_t* lv_glfw_texture_get_mouse_indev(lv_glfw_texture_t* texture) {
+lv_indev_t *lv_glfw_texture_get_mouse_indev(lv_glfw_texture_t *texture) {
   return texture->indev;
 }
+#endif
 
 /**********************
  *   STATIC FUNCTIONS
  **********************/
+#if 0 //TODO
 
 static int lv_glfw_init(void) {
   if (glfw_inited) {
@@ -401,5 +423,6 @@ static uint32_t lv_glfw_tick_count_callback(void) {
   double tick = glfwGetTime() * 1000.0;
   return (uint32_t)tick;
 }
+#endif //TODO
 
 #endif /*LV_USE_OPENGLES*/
